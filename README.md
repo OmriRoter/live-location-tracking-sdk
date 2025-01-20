@@ -1,5 +1,5 @@
-```markdown
-# Location Tracking Android Library
+
+## Location Tracking Android Library
 
 [![](https://jitpack.io/v/OmriRoter/live-location-tracking-sdk.svg)](https://jitpack.io/#OmriRoter/live-location-tracking-sdk)
 
