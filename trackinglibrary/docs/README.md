@@ -1,4 +1,7 @@
+```markdown
 # Location Tracking Android Library
+
+[![](https://jitpack.io/v/OmriRoter/live-location-tracking-sdk.svg)](https://jitpack.io/#OmriRoter/live-location-tracking-sdk)
 
 A lightweight Android library for real-time location tracking, built on top of the Live Location Tracking API.
 
@@ -12,21 +15,24 @@ A lightweight Android library for real-time location tracking, built on top of t
 
 ## Installation
 
-Add JitPack repository to your project's `settings.gradle`:
+Add JitPack repository to your project's `settings.gradle.kts`:
 
 ```kotlin
 dependencyResolutionManagement {
+    repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
     repositories {
+        google()
+        mavenCentral()
         maven { url = uri("https://jitpack.io") }
     }
 }
 ```
 
-Add the dependency to your module's `build.gradle`:
+Add the dependency to your module's `build.gradle.kts`:
 
 ```kotlin
 dependencies {
-    implementation("com.github.yourusername:trackinglibrary:1.0.0")
+    implementation("com.github.OmriRoter:live-location-tracking-sdk:1.0.0")
 }
 ```
 
@@ -92,19 +98,19 @@ tracker.getUserLocation(userId, new LocationCallback() {
 ## Best Practices
 
 1. User ID Management:
-    - Store user IDs securely
-    - Handle user IDs with care
-    - Don't expose user IDs in logs
+   - Store user IDs securely
+   - Handle user IDs with care
+   - Don't expose user IDs in logs
 
 2. Location Updates:
-    - Update frequency: 5-10 seconds recommended
-    - Validate location data before sending
-    - Handle location permissions properly
+   - Update frequency: 5-10 seconds recommended
+   - Validate location data before sending
+   - Handle location permissions properly
 
 3. Error Handling:
-    - Always implement error callbacks
-    - Handle network issues gracefully
-    - Show user-friendly error messages
+   - Always implement error callbacks
+   - Handle network issues gracefully
+   - Show user-friendly error messages
 
 ## Required Permissions
 
@@ -118,26 +124,22 @@ Add these permissions to your AndroidManifest.xml:
 
 ## Demo Application
 
-Check out our [demo application](link-to-demo-app) for a complete implementation example.
+Check out our [demo application](https://github.com/OmriRoter/live-location-tracking-sdk/tree/master/app) for a complete implementation example.
 
 ## API Documentation
 
-For detailed API documentation, please visit our [API Documentation](docs/api/README.md).
+For detailed API documentation and examples, please visit our [Documentation](docs/examples/examples.md).
 
 ## License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-## Contributing
-
-Contributions are welcome! Please read our [Contributing Guidelines](CONTRIBUTING.md) for details.
-
 ## Support
 
-For support, please create an issue in the GitHub repository.
+For support, please create an issue in the [GitHub repository](https://github.com/OmriRoter/live-location-tracking-sdk/issues).
 
 ## Acknowledgments
 
 - Built on top of [Live Location Tracking API](https://live-location-tracking-backend.vercel.app)
 - Uses [Retrofit](https://square.github.io/retrofit/) for API communication
-
+```
