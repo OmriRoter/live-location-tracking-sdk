@@ -1,5 +1,6 @@
 package com.omri.trackinglibrary;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -8,6 +9,7 @@ import static org.mockito.ArgumentMatchers.any;
 import com.omri.trackinglibrary.api.ApiService;
 import com.omri.trackinglibrary.api.LocationUpdateRequest;
 import com.omri.trackinglibrary.api.UserRequest;
+import com.omri.trackinglibrary.api.UserStatusRequest;
 import com.omri.trackinglibrary.interfaces.LocationCallback;
 import com.omri.trackinglibrary.interfaces.UserCallback;
 import com.omri.trackinglibrary.models.User;
@@ -25,6 +27,7 @@ public class UserTest {
 
     private ApiService apiService;
     private LocationTrackerImpl locationTracker;
+    private User testUser;
 
     /**
      * Sets up the test environment by mocking dependencies before each test case.
@@ -33,6 +36,16 @@ public class UserTest {
     public void setUp() {
         apiService = mock(ApiService.class);
         locationTracker = new LocationTrackerImpl(apiService);
+        testUser = new User("123", "testUser", "2024-01-20", true);
+    }
+
+    @Test
+    public void userCreation_isCorrect() {
+        // Test user object creation with active status
+        assertEquals("123", testUser.getId());
+        assertEquals("testUser", testUser.getUsername());
+        assertEquals("2024-01-20", testUser.getCreatedAt());
+        assertEquals(true, testUser.isActive());
     }
 
     /**
@@ -47,6 +60,29 @@ public class UserTest {
 
         // Act: Attempt to create a user and verify success callback is triggered
         locationTracker.createUser("testUser", new UserCallback() {
+            @Override
+            public void onSuccess(User user) {
+                // Test passes if we reach here without failure
+            }
+
+            @Override
+            public void onError(String error) {
+                fail("Should not reach error callback");
+            }
+        });
+    }
+
+    /**
+     * Tests the updateUserStatus method to ensure it successfully interacts with the API service.
+     */
+    @Test
+    public void updateUserStatus_Success() {
+        // Arrange: Mock the API service to return a mocked call object
+        Call<User> mockCall = mock(Call.class);
+        when(apiService.updateUserStatus(any(String.class), any(UserStatusRequest.class))).thenReturn(mockCall);
+
+        // Act: Attempt to update user status and verify success callback is triggered
+        locationTracker.updateUserStatus("123", false, new UserCallback() {
             @Override
             public void onSuccess(User user) {
                 // Test passes if we reach here without failure

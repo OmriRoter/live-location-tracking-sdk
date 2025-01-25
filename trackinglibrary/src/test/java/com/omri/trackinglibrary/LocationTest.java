@@ -24,4 +24,19 @@ public class LocationTest {
         assertEquals(34.855499, location.getLongitude(), 0.000001);
         assertEquals("2024-01-20", location.getLastUpdated());
     }
+
+    /**
+     * Tests that default location values (0.0, 0.0) are handled correctly
+     */
+    @Test
+    public void defaultLocationCreation_isCorrect() {
+        // Arrange: Create a Location object with default coordinates
+        Location location = new Location("123", 0.0, 0.0, "2024-01-20");
+
+        // Assert: Verify that default coordinates are correctly set and retrieved
+        assertEquals("123", location.getUserId());
+        assertEquals(0.0, location.getLatitude(), 0.000001);
+        assertEquals(0.0, location.getLongitude(), 0.000001);
+        assertEquals("2024-01-20", location.getLastUpdated());
+    }
 }
