@@ -5,6 +5,7 @@ import com.omri.trackinglibrary.models.User;
 import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.GET;
+import retrofit2.http.PATCH;
 import retrofit2.http.POST;
 import retrofit2.http.Path;
 
@@ -22,6 +23,16 @@ public interface ApiService {
      */
     @POST("/api/users/create")
     Call<User> createUser(@Body UserRequest request);
+
+    /**
+     * Updates the active status of a user.
+     *
+     * @param userId The ID of the user to update.
+     * @param request The status update request containing the new active status.
+     * @return A Call object to execute the request asynchronously or synchronously.
+     */
+    @PATCH("/api/users/{userId}/status")
+    Call<User> updateUserStatus(@Path("userId") String userId, @Body UserStatusRequest request);
 
     /**
      * Sends a request to update the location of a user.

@@ -4,6 +4,7 @@ import com.omri.trackinglibrary.api.ApiClient;
 import com.omri.trackinglibrary.api.ApiService;
 import com.omri.trackinglibrary.api.LocationUpdateRequest;
 import com.omri.trackinglibrary.api.UserRequest;
+import com.omri.trackinglibrary.api.UserStatusRequest;
 import com.omri.trackinglibrary.interfaces.LocationCallback;
 import com.omri.trackinglibrary.interfaces.LocationTracker;
 import com.omri.trackinglibrary.interfaces.UserCallback;
@@ -16,7 +17,7 @@ import retrofit2.Response;
 
 /**
  * LocationTrackerImpl is an implementation of the LocationTracker interface.
- * It handles user creation, location updates, and retrieval by interacting with the backend API.
+ * It handles user creation, status updates, location updates, and retrieval by interacting with the backend API.
  */
 public class LocationTrackerImpl implements LocationTracker {
     private final ApiService apiService;
@@ -64,12 +65,39 @@ public class LocationTrackerImpl implements LocationTracker {
     }
 
     /**
-     * Updates the location of a user and handles the response via a callback.
+     * Updates the active status of a user.
      *
      * @param userId   The unique identifier of the user.
-     * @param latitude The latitude of the new location.
-     * @param longitude The longitude of the new location.
+     * @param isActive The new active status to set.
      * @param callback The callback to handle the success or error response.
+     */
+    @Override
+    public void updateUserStatus(String userId, boolean isActive, final UserCallback callback) {
+        apiService.updateUserStatus(userId, new UserStatusRequest(isActive))
+                .enqueue(new Callback<User>() {
+                    @Override
+                    public void onResponse(Call<User> call, Response<User> response) {
+                        if (response.isSuccessful() && response.body() != null) {
+                            callback.onSuccess(response.body());
+                        } else {
+                            callback.onError("Failed to update user status");
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<User> call, Throwable t) {
+                        callback.onError(t.getMessage());
+                    }
+                });
+    }
+
+    /**
+     * Updates the location of a user and handles the response via a callback.
+     *
+     * @param userId    The unique identifier of the user.
+     * @param latitude  The latitude of the new location.
+     * @param longitude The longitude of the new location.
+     * @param callback  The callback to handle the success or error response.
      */
     @Override
     public void updateLocation(String userId, double latitude, double longitude, final LocationCallback callback) {

@@ -2,7 +2,7 @@ package com.omri.trackinglibrary.interfaces;
 
 /**
  * LocationTracker defines the contract for tracking user locations,
- * including user creation, location updates, and retrieval of user locations.
+ * including user creation, status updates, location updates, and retrieval of user locations.
  */
 public interface LocationTracker {
 
@@ -15,13 +15,22 @@ public interface LocationTracker {
     void createUser(String username, UserCallback callback);
 
     /**
+     * Updates the active status of a user.
+     *
+     * @param userId   The unique identifier of the user.
+     * @param isActive The new active status to set.
+     * @param callback The callback to handle the response of the status update process.
+     */
+    void updateUserStatus(String userId, boolean isActive, UserCallback callback);
+
+    /**
      * Updates the location of a user with the given user ID, latitude, and longitude.
      * The result of the operation is returned through the provided callback.
      *
-     * @param userId   The unique identifier of the user whose location is being updated.
-     * @param latitude The latitude of the new location.
+     * @param userId    The unique identifier of the user whose location is being updated.
+     * @param latitude  The latitude of the new location.
      * @param longitude The longitude of the new location.
-     * @param callback The callback to handle the response of the location update process.
+     * @param callback  The callback to handle the response of the location update process.
      */
     void updateLocation(String userId, double latitude, double longitude, LocationCallback callback);
 
