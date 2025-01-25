@@ -82,7 +82,7 @@ public class UserTest {
         when(apiService.updateUserStatus(any(String.class), any(UserStatusRequest.class))).thenReturn(mockCall);
 
         // Act: Attempt to update user status and verify success callback is triggered
-        locationTracker.updateUserStatus("123", false, new UserCallback() {
+        locationTracker.updateUserStatus("123", true, new UserCallback() {
             @Override
             public void onSuccess(User user) {
                 // Test passes if we reach here without failure
@@ -133,6 +133,25 @@ public class UserTest {
         locationTracker.getUserLocation("123", new LocationCallback() {
             @Override
             public void onSuccess(Location location) {
+                // Test passes if we reach here without failure
+            }
+
+            @Override
+            public void onError(String error) {
+                fail("Should not reach error callback");
+            }
+        });
+    }
+    @Test
+    public void getUserStatus_Success() {
+        // Arrange: Mock the API service to return a mocked call object
+        Call<User> mockCall = mock(Call.class);
+        when(apiService.getUser(any(String.class))).thenReturn(mockCall);
+
+        // Act: Attempt to get user status and verify success callback is triggered
+        locationTracker.getUserStatus("123", new UserCallback() {
+            @Override
+            public void onSuccess(User user) {
                 // Test passes if we reach here without failure
             }
 

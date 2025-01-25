@@ -35,6 +35,15 @@ public interface ApiService {
     Call<User> updateUserStatus(@Path("userId") String userId, @Body UserStatusRequest request);
 
     /**
+     * Gets user information including status.
+     *
+     * @param userId The ID of the user to get information for.
+     * @return A Call object to execute the request asynchronously or synchronously.
+     */
+    @GET("/api/users/{userId}")
+    Call<User> getUser(@Path("userId") String userId);
+
+    /**
      * Sends a request to update the location of a user.
      *
      * @param request The location update request containing updated location details.

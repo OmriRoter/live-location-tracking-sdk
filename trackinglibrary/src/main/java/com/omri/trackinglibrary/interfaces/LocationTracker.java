@@ -24,6 +24,14 @@ public interface LocationTracker {
     void updateUserStatus(String userId, boolean isActive, UserCallback callback);
 
     /**
+     * Gets the current status of a user.
+     *
+     * @param userId   The unique identifier of the user.
+     * @param callback The callback to handle the response of the status retrieval process.
+     */
+    void getUserStatus(String userId, UserCallback callback);
+
+    /**
      * Updates the location of a user with the given user ID, latitude, and longitude.
      * The result of the operation is returned through the provided callback.
      *

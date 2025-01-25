@@ -72,7 +72,7 @@ public class LocationTrackerImpl implements LocationTracker {
      * @param callback The callback to handle the success or error response.
      */
     @Override
-    public void updateUserStatus(String userId, boolean isActive, final UserCallback callback) {
+    public void updateUserStatus(String userId, boolean isActive, UserCallback callback) {
         apiService.updateUserStatus(userId, new UserStatusRequest(isActive))
                 .enqueue(new Callback<User>() {
                     @Override
@@ -89,6 +89,26 @@ public class LocationTrackerImpl implements LocationTracker {
                         callback.onError(t.getMessage());
                     }
                 });
+    }
+
+    @Override
+    public void getUserStatus(String userId, UserCallback callback) {
+        // We can reuse the existing getUser endpoint since it includes the isActive field
+        apiService.getUser(userId).enqueue(new Callback<User>() {
+            @Override
+            public void onResponse(Call<User> call, Response<User> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    callback.onSuccess(response.body());
+                } else {
+                    callback.onError("Failed to get user status");
+                }
+            }
+
+            @Override
+            public void onFailure(Call<User> call, Throwable t) {
+                callback.onError(t.getMessage());
+            }
+        });
     }
 
     /**
