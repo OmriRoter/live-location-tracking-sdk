@@ -9,7 +9,6 @@ A lightweight Android library for real-time location tracking, built on top of t
 - Easy user creation and management
 - User active status tracking and updates
 - Real-time location updates
-- Automatic default location initialization
 - Location tracking for specific users
 - Built with Retrofit for reliable API communication
 - Simple integration process
@@ -33,7 +32,7 @@ Add the dependency to your module's `build.gradle.kts`:
 
 ```kotlin
 dependencies {
-    implementation("com.github.OmriRoter:live-location-tracking-sdk:1.1.0")
+    implementation("com.github.OmriRoter:live-location-tracking-sdk:1.1.1")
 }
 ```
 
@@ -54,6 +53,23 @@ tracker.createUser("username", new UserCallback() {
         String userId = user.getId();
         boolean isActive = user.isActive(); // Will be true by default
         // Store userId for future use
+    }
+
+    @Override
+    public void onError(String error) {
+        // Handle error
+    }
+});
+```
+
+### Check User Status
+
+```java
+tracker.getUserStatus(userId, new UserCallback() {
+    @Override
+    public void onSuccess(User user) {
+        boolean isActive = user.isActive();
+        // Handle user status
     }
 
     @Override
@@ -161,6 +177,13 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 For support, please create an issue in the [GitHub repository](https://github.com/OmriRoter/live-location-tracking-sdk/issues).
 
 ## Change Log
+
+### Version 1.1.1
+- Added getUserStatus method to check user's active state
+- Added updateUserStatus method to toggle user's sharing status
+- Fixed duplicate method declarations
+- Improved error handling
+- Added comprehensive unit tests for user status management
 
 ### Version 1.1.0
 - Added user active status tracking
