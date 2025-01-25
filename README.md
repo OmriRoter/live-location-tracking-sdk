@@ -1,5 +1,4 @@
-
-## Location Tracking Android Library
+# Location Tracking Android Library
 
 [![](https://jitpack.io/v/OmriRoter/live-location-tracking-sdk.svg)](https://jitpack.io/#OmriRoter/live-location-tracking-sdk)
 
@@ -8,7 +7,9 @@ A lightweight Android library for real-time location tracking, built on top of t
 ## Features
 
 - Easy user creation and management
+- User active status tracking and updates
 - Real-time location updates
+- Automatic default location initialization
 - Location tracking for specific users
 - Built with Retrofit for reliable API communication
 - Simple integration process
@@ -32,7 +33,7 @@ Add the dependency to your module's `build.gradle.kts`:
 
 ```kotlin
 dependencies {
-    implementation("com.github.OmriRoter:live-location-tracking-sdk:1.0.0")
+    implementation("com.github.OmriRoter:live-location-tracking-sdk:1.1.0")
 }
 ```
 
@@ -51,7 +52,25 @@ tracker.createUser("username", new UserCallback() {
     @Override
     public void onSuccess(User user) {
         String userId = user.getId();
+        boolean isActive = user.isActive(); // Will be true by default
         // Store userId for future use
+    }
+
+    @Override
+    public void onError(String error) {
+        // Handle error
+    }
+});
+```
+
+### Update User Status
+
+```java
+tracker.updateUserStatus(userId, false, new UserCallback() {
+    @Override
+    public void onSuccess(User user) {
+        boolean isActive = user.isActive();
+        // Handle updated user status
     }
 
     @Override
@@ -85,6 +104,7 @@ tracker.getUserLocation(userId, new LocationCallback() {
     public void onSuccess(Location location) {
         double latitude = location.getLatitude();
         double longitude = location.getLongitude();
+        String lastUpdated = location.getLastUpdated();
         // Use the location data
     }
 
@@ -97,15 +117,17 @@ tracker.getUserLocation(userId, new LocationCallback() {
 
 ## Best Practices
 
-1. User ID Management:
+1. User Management:
    - Store user IDs securely
+   - Track user active status for online/offline functionality
    - Handle user IDs with care
    - Don't expose user IDs in logs
 
 2. Location Updates:
-   - Update frequency: 5-10 seconds recommended
+   - Update frequency: 5-10 seconds recommended during active tracking
    - Validate location data before sending
    - Handle location permissions properly
+   - Check user active status before updating location
 
 3. Error Handling:
    - Always implement error callbacks
@@ -138,8 +160,16 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 For support, please create an issue in the [GitHub repository](https://github.com/OmriRoter/live-location-tracking-sdk/issues).
 
+## Change Log
+
+### Version 1.1.0
+- Added user active status tracking
+- Added automatic default location initialization
+- Added status update endpoint
+- Improved error handling
+- Updated documentation
+
 ## Acknowledgments
 
 - Built on top of [Live Location Tracking API](https://live-location-tracking-backend.vercel.app)
 - Uses [Retrofit](https://square.github.io/retrofit/) for API communication
-```
