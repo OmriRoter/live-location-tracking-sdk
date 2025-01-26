@@ -12,11 +12,15 @@ constraintlayout = "2.1.4"
 mockitoCore = "5.3.1"
 mockitoCoreVersion = "5.7.0"
 mockitoInline = "5.7.0"
+mockitoMockitoCore = "4.0.0"
 mockwebserver = "4.9.0"
 navigationFragment = "2.6.0"
 navigationUi = "2.6.0"
 objenesis = "3.3"
 junitJunit = "4.12"
+powermockModuleJunit4 = "2.0.9"
+robolectric = "4.9"
+robolectricVersion = "4.9.2"
 
 [libraries]
 byte-buddy = { module = "net.bytebuddy:byte-buddy", version.ref = "byteBuddy" }
@@ -30,6 +34,7 @@ live-location-tracking-sdk = { module = "com.github.OmriRoter:live-location-trac
 material = { group = "com.google.android.material", name = "material", version.ref = "material" }
 constraintlayout = { group = "androidx.constraintlayout", name = "constraintlayout", version.ref = "constraintlayout" }
 mockito-core = { module = "org.mockito:mockito-core", version.ref = "mockitoCore" }
+mockito-core-v400 = { module = "org.mockito:mockito-core", version.ref = "mockitoMockitoCore" }
 mockito-core-v570 = { module = "org.mockito:mockito-core", version.ref = "mockitoCoreVersion" }
 mockito-inline = { module = "org.mockito:mockito-inline", version.ref = "mockitoCore" }
 mockito-inline-v570 = { module = "org.mockito:mockito-inline", version.ref = "mockitoInline" }
@@ -38,9 +43,13 @@ mockwebserver = { module = "com.squareup.okhttp3:mockwebserver", version.ref = "
 navigation-fragment = { group = "androidx.navigation", name = "navigation-fragment", version.ref = "navigationFragment" }
 navigation-ui = { group = "androidx.navigation", name = "navigation-ui", version.ref = "navigationUi" }
 objenesis = { module = "org.objenesis:objenesis", version.ref = "objenesis" }
+powermock-api-mockito2 = { module = "org.powermock:powermock-api-mockito2", version.ref = "powermockModuleJunit4" }
+powermock-module-junit4 = { module = "org.powermock:powermock-module-junit4", version.ref = "powermockModuleJunit4" }
 retrofit = { module = "com.squareup.retrofit2:retrofit", version.ref = "converterGson" }
 retrofit-mock = { module = "com.squareup.retrofit2:retrofit-mock", version.ref = "converterGson" }
 junit-junit = { group = "junit", name = "junit", version.ref = "junitJunit" }
+robolectric = { module = "org.robolectric:robolectric", version.ref = "robolectric" }
+robolectric-v492 = { module = "org.robolectric:robolectric", version.ref = "robolectricVersion" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

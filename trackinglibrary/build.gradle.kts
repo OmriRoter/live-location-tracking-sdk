@@ -34,6 +34,11 @@ android {
         sourceCompatibility = JavaVersion.VERSION_1_8
         targetCompatibility = JavaVersion.VERSION_1_8
     }
+    testOptions {
+        unitTests {
+            isReturnDefaultValues = true
+        }
+    }
 }
 
 afterEvaluate {
@@ -42,7 +47,7 @@ afterEvaluate {
             create<MavenPublication>("release") {
                 groupId = "com.github.OmriRoter"
                 artifactId = "live-location-tracking-sdk"
-                version = "1.0.0"
+                version = "1.1.4"
                 artifact(tasks.getByName("bundleReleaseAar"))
 
                 pom {

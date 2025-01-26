@@ -8,6 +8,9 @@
       <SelectionState runConfigName="Tests in 'com.omri.trackinglibrary'">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
+      <SelectionState runConfigName="trackinglibrary">
+        <option name="selectionMode" value="DROPDOWN" />
+      </SelectionState>
     </selectionStates>
   </component>
 </project>

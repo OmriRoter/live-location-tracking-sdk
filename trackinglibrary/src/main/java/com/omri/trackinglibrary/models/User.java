@@ -1,19 +1,20 @@
 package com.omri.trackinglibrary.models;
 
+import com.google.gson.annotations.SerializedName;
+
 /**
  * User represents a user in the system with attributes such as ID, username, creation timestamp, and active status.
  */
 public class User {
-    // The unique identifier of the user
+    @SerializedName("_id")
     private String id;
 
-    // The username of the user
     private String username;
 
-    // The timestamp indicating when the user was created
+    @SerializedName("created_at")
     private String createdAt;
 
-    // The active status of the user
+    @SerializedName("is_active")
     private boolean isActive;
 
     /**
@@ -29,6 +30,20 @@ public class User {
         this.username = username;
         this.createdAt = createdAt;
         this.isActive = isActive;
+        validate();
+    }
+
+    /**
+     * Validates the user data.
+     * @throws IllegalStateException if required fields are invalid
+     */
+    public void validate() {
+        if (id == null || id.isEmpty()) {
+            throw new IllegalStateException("User ID cannot be null or empty");
+        }
+        if (username == null || username.isEmpty()) {
+            throw new IllegalStateException("Username cannot be null or empty");
+        }
     }
 
     /**

@@ -1,20 +1,20 @@
 package com.omri.trackinglibrary.models;
 
+import com.google.gson.annotations.SerializedName;
+
 /**
  * Location represents the geographical location details of a user,
  * including the user ID, latitude, longitude, and the timestamp of the last update.
  */
 public class Location {
-    // The unique identifier of the user associated with this location
+    @SerializedName("user_id")
     private String userId;
 
-    // The latitude coordinate of the user's location
     private double latitude;
 
-    // The longitude coordinate of the user's location
     private double longitude;
 
-    // The timestamp of when the location was last updated
+    @SerializedName("last_updated")
     private String lastUpdated;
 
     /**
@@ -30,6 +30,24 @@ public class Location {
         this.latitude = latitude;
         this.longitude = longitude;
         this.lastUpdated = lastUpdated;
+        validate();
+    }
+
+    /**
+     * Validates the location data.
+     * @throws IllegalStateException if user ID is invalid
+     * @throws IllegalArgumentException if coordinates are invalid
+     */
+    public void validate() {
+        if (userId == null || userId.isEmpty()) {
+            throw new IllegalStateException("User ID cannot be null or empty");
+        }
+        if (latitude < -90 || latitude > 90) {
+            throw new IllegalArgumentException("Invalid latitude value");
+        }
+        if (longitude < -180 || longitude > 180) {
+            throw new IllegalArgumentException("Invalid longitude value");
+        }
     }
 
     /**
