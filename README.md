@@ -1,17 +1,24 @@
-# Location Tracking Android Library
+# Live Location Tracking Android Library
 
 [![](https://jitpack.io/v/OmriRoter/live-location-tracking-sdk.svg)](https://jitpack.io/#OmriRoter/live-location-tracking-sdk)
 
-A lightweight Android library for real-time location tracking, built on top of the Live Location Tracking API.
+A lightweight Android library for real-time location tracking, designed for easy integration with the Live Location Tracking API.
 
 ## Features
 
-- Easy user creation and management
-- User active status tracking and updates
-- Real-time location updates
-- Location tracking for specific users
+- User Management:
+  - Create new users with unique usernames
+  - Verify existing users using their user ID
+  - Update and track user active status
+- Location Services:
+  - Update user location in real-time
+  - Retrieve locations of active users
+  - Built-in coordinate validation
+- Error Handling:
+  - Comprehensive error reporting
+  - Network error handling
+  - Input validation
 - Built with Retrofit for reliable API communication
-- Simple integration process
 
 ## Installation
 
@@ -32,88 +39,105 @@ Add the dependency to your module's `build.gradle.kts`:
 
 ```kotlin
 dependencies {
-    implementation("com.github.OmriRoter:live-location-tracking-sdk:1.1.1")
+    implementation("com.github.OmriRoter:live-location-tracking-sdk:1.1.4")
 }
 ```
 
-## Usage
+## Core Components
 
-### Initialize the Library
+### User Management
 
+#### Creating a New User
+Create a new user account with a unique username:
 ```java
 LocationTracker tracker = new LocationTrackerImpl();
-```
 
-### Create a New User
-
-```java
 tracker.createUser("username", new UserCallback() {
     @Override
     public void onSuccess(User user) {
+        // IMPORTANT: Store this ID securely - it's required for future login
         String userId = user.getId();
-        boolean isActive = user.isActive(); // Will be true by default
-        // Store userId for future use
+        String username = user.getUsername();
+        boolean isActive = user.isActive(); // true by default
+        String createdAt = user.getCreatedAt();
     }
 
     @Override
     public void onError(String error) {
-        // Handle error
+        // Handle specific error cases:
+        // - "Username already exists"
+        // - "Username cannot be null or empty"
+        // - "Username must be at least 3 characters long"
+        // - "Username cannot be longer than 50 characters"
     }
 });
 ```
 
-### Check User Status
-
+#### Verifying an Existing User (Login)
+Verify a user exists using their user ID:
 ```java
-tracker.getUserStatus(userId, new UserCallback() {
+tracker.verifyUser(userId, new UserCallback() {
     @Override
     public void onSuccess(User user) {
+        // User verified successfully
         boolean isActive = user.isActive();
-        // Handle user status
+        String username = user.getUsername();
     }
 
     @Override
     public void onError(String error) {
-        // Handle error
+        // Handle specific error cases:
+        // - "User not found"
+        // - "Invalid user ID format"
     }
 });
 ```
 
-### Update User Status
-
+#### Managing User Status
+Update user's active status:
 ```java
-tracker.updateUserStatus(userId, false, new UserCallback() {
+tracker.updateUserStatus(userId, true, new UserCallback() {
     @Override
     public void onSuccess(User user) {
-        boolean isActive = user.isActive();
-        // Handle updated user status
+        // Status updated successfully
+        boolean currentStatus = user.isActive();
     }
 
     @Override
     public void onError(String error) {
-        // Handle error
+        // Handle specific error cases:
+        // - "User not found"
+        // - "Invalid user ID format"
     }
 });
 ```
 
-### Update User Location
+### Location Services
 
+#### Updating User Location
+Update the current location of a user:
 ```java
 tracker.updateLocation(userId, latitude, longitude, new LocationCallback() {
     @Override
     public void onSuccess(Location location) {
-        // Location updated successfully
+        double updatedLat = location.getLatitude();
+        double updatedLng = location.getLongitude();
+        String lastUpdated = location.getLastUpdated();
     }
 
     @Override
     public void onError(String error) {
-        // Handle error
+        // Handle specific error cases:
+        // - "User not found"
+        // - "Invalid user ID format"
+        // - "Invalid latitude value" (must be between -90 and 90)
+        // - "Invalid longitude value" (must be between -180 and 180)
     }
 });
 ```
 
-### Get User Location
-
+#### Retrieving User Location
+Get the latest location of an active user:
 ```java
 tracker.getUserLocation(userId, new LocationCallback() {
     @Override
@@ -121,78 +145,183 @@ tracker.getUserLocation(userId, new LocationCallback() {
         double latitude = location.getLatitude();
         double longitude = location.getLongitude();
         String lastUpdated = location.getLastUpdated();
-        // Use the location data
     }
 
     @Override
     public void onError(String error) {
-        // Handle error
+        // Handle specific error cases:
+        // - "User not found"
+        // - "User is not active"
+        // - "Location not found for this user"
+        // - "Invalid user ID format"
+    }
+});
+```
+
+## Implementation Guide
+
+### Step 1: Setup
+1. Add required permissions to AndroidManifest.xml:
+```xml
+<uses-permission android:name="android.permission.INTERNET" />
+```
+
+2. Initialize the LocationTracker:
+```java
+LocationTracker tracker = new LocationTrackerImpl();
+```
+
+### Step 2: User Flow Implementation
+1. Registration:
+```java
+// When user wants to register
+tracker.createUser(username, new UserCallback() {
+    @Override
+    public void onSuccess(User user) {
+        // CRUCIAL: Store user.getId() securely
+        // You'll need this ID for future sessions
+    }
+    
+    @Override
+    public void onError(String error) {
+        // Show error to user
+    }
+});
+```
+
+2. Login:
+```java
+// When user wants to login using stored userId
+tracker.verifyUser(storedUserId, new UserCallback() {
+    @Override
+    public void onSuccess(User user) {
+        // User verified - proceed to main functionality
+    }
+    
+    @Override
+    public void onError(String error) {
+        // Handle invalid/expired userId
+    }
+});
+```
+
+### Step 3: Location Tracking Implementation
+1. Update user's location:
+```java
+// Call this periodically (e.g., every 5-10 seconds)
+tracker.updateLocation(userId, currentLatitude, currentLongitude, 
+    new LocationCallback() {
+        @Override
+        public void onSuccess(Location location) {
+            // Location updated successfully
+        }
+        
+        @Override
+        public void onError(String error) {
+            // Handle update failure
+        }
+    });
+```
+
+2. Track another user's location:
+```java
+// Call this to get another user's location
+tracker.getUserLocation(targetUserId, new LocationCallback() {
+    @Override
+    public void onSuccess(Location location) {
+        // Update UI with location.getLatitude() and location.getLongitude()
+    }
+    
+    @Override
+    public void onError(String error) {
+        if (error.contains("not active")) {
+            // User is not sharing their location
+        } else {
+            // Handle other errors
+        }
     }
 });
 ```
 
 ## Best Practices
 
-1. User Management:
-   - Store user IDs securely
-   - Track user active status for online/offline functionality
-   - Handle user IDs with care
-   - Don't expose user IDs in logs
+### User Management
+1. **User ID Storage**
+   - Store user ID securely (e.g., EncryptedSharedPreferences)
+   - Never expose user ID in logs or UI
+   - Validate user ID before making API calls
 
-2. Location Updates:
-   - Update frequency: 5-10 seconds recommended during active tracking
-   - Validate location data before sending
-   - Handle location permissions properly
-   - Check user active status before updating location
+2. **Status Management**
+   - Update status to false when user wants to stop sharing location
+   - Check user status before attempting to get their location
+   - Handle "User not active" errors appropriately
 
-3. Error Handling:
-   - Always implement error callbacks
-   - Handle network issues gracefully
+### Location Updates
+1. **Update Frequency**
+   - Recommended: 5-10 seconds between updates
+   - Adjust based on your specific use case
+   - Consider battery impact
+
+2. **Error Handling**
+   - Always implement both success and error callbacks
    - Show user-friendly error messages
+   - Handle network errors gracefully
 
-## Required Permissions
+## Error Handling Guide
 
-Add these permissions to your AndroidManifest.xml:
+### Common Error Cases
+1. User Creation Errors:
+   - "Username already exists"
+   - "Username cannot be null or empty"
+   - "Username must be at least 3 characters long"
+   - "Username cannot be longer than 50 characters"
 
-```xml
-<uses-permission android:name="android.permission.INTERNET" />
-<uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
-<uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+2. User Verification Errors:
+   - "User not found"
+   - "Invalid user ID format"
+
+3. Location Update Errors:
+   - "Invalid latitude value"
+   - "Invalid longitude value"
+   - "User not found"
+
+4. Location Retrieval Errors:
+   - "User is not active"
+   - "Location not found for this user"
+   - "Invalid user ID format"
+
+### Example Error Handling
+```java
+@Override
+public void onError(String error) {
+    if (error.contains("not active")) {
+        // User has disabled location sharing
+        showLocationSharingDisabledMessage();
+    } else if (error.contains("not found")) {
+        // User doesn't exist
+        handleInvalidUser();
+    } else if (error.contains("Invalid")) {
+        // Invalid input
+        handleInvalidInput(error);
+    } else {
+        // Network or server error
+        handleGeneralError(error);
+    }
+}
 ```
 
-## Demo Application
+## Version History
 
-Check out our [demo application](https://github.com/OmriRoter/live-location-tracking-sdk/tree/master/app) for a complete implementation example.
+### Version 1.1.4 (Current)
+- Added user verification endpoint
+- Enhanced error handling and validation
+- Updated documentation
+- Added comprehensive test coverage
 
-## API Documentation
+## Support
 
-For detailed API documentation and examples, please visit our [Documentation](docs/examples/examples.md).
+For support and bug reports, please create an issue in the [GitHub repository](https://github.com/OmriRoter/live-location-tracking-sdk/issues).
 
 ## License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-## Support
-
-For support, please create an issue in the [GitHub repository](https://github.com/OmriRoter/live-location-tracking-sdk/issues).
-
-## Change Log
-
-### Version 1.1.1
-- Added getUserStatus method to check user's active state
-- Added updateUserStatus method to toggle user's sharing status
-- Fixed duplicate method declarations
-- Improved error handling
-- Added comprehensive unit tests for user status management
-
-### Version 1.1.0
-- Added user active status tracking
-- Added automatic default location initialization
-- Added status update endpoint
-- Improved error handling
-- Updated documentation
-
-## Acknowledgments
-
-- Built on top of [Live Location Tracking API](https://live-location-tracking-backend.vercel.app)
-- Uses [Retrofit](https://square.github.io/retrofit/) for API communication
