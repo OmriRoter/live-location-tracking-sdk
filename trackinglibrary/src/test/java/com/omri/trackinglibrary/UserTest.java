@@ -1,6 +1,7 @@
 package com.omri.trackinglibrary;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.fail;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -11,6 +12,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import com.omri.trackinglibrary.api.ApiService;
 import com.omri.trackinglibrary.api.UserRequest;
 import com.omri.trackinglibrary.api.UserStatusRequest;
+import com.omri.trackinglibrary.api.UserVerifyRequest;
 import com.omri.trackinglibrary.interfaces.UserCallback;
 import com.omri.trackinglibrary.models.User;
 
@@ -23,8 +25,9 @@ import retrofit2.Call;
 public class UserTest {
     private ApiService apiService;
     private LocationTrackerImpl locationTracker;
-    private static final String TEST_USER_ID = "test123";
+    private static final String TEST_USER_ID = "507f1f77bcf86cd799439011";
     private static final String TEST_USERNAME = "testUser";
+    private static final String TEST_TIMESTAMP = "2024-01-25T10:00:00.000Z";
 
     @Before
     public void setUp() {
@@ -33,23 +36,35 @@ public class UserTest {
     }
 
     @Test
-    public void userCreation_isCorrect() {
-        User user = new User(TEST_USER_ID, TEST_USERNAME, "2024-01-25", true);
+    public void userCreation_ValidData_Success() {
+        User user = new User(TEST_USER_ID, TEST_USERNAME, TEST_TIMESTAMP, true);
         assertEquals(TEST_USER_ID, user.getId());
         assertEquals(TEST_USERNAME, user.getUsername());
         assertEquals(true, user.isActive());
+        assertEquals(TEST_TIMESTAMP, user.getCreatedAt());
     }
 
     @Test
-    public void createUser_Success() {
-        // Arrange
+    public void userCreation_NullId_ThrowsException() {
+        assertThrows(IllegalStateException.class, () ->
+                new User(null, TEST_USERNAME, TEST_TIMESTAMP, true)
+        );
+    }
+
+    @Test
+    public void userCreation_NullUsername_ThrowsException() {
+        assertThrows(IllegalStateException.class, () ->
+                new User(TEST_USER_ID, null, TEST_TIMESTAMP, true)
+        );
+    }
+
+    @Test
+    public void createUser_ValidUsername_Success() {
         Call<User> mockCall = mock(Call.class);
         when(apiService.createUser(any(UserRequest.class))).thenReturn(mockCall);
 
-        // Capture the request to verify username
         ArgumentCaptor<UserRequest> requestCaptor = ArgumentCaptor.forClass(UserRequest.class);
 
-        // Act
         locationTracker.createUser(TEST_USERNAME, new UserCallback() {
             @Override
             public void onSuccess(User user) {
@@ -62,22 +77,41 @@ public class UserTest {
             }
         });
 
-        // Assert
         verify(apiService).createUser(requestCaptor.capture());
         assertEquals(TEST_USERNAME, requestCaptor.getValue().getUsername());
     }
 
     @Test
-    public void updateUserStatus_Success() {
-        // Arrange
+    public void verifyUser_ValidUserId_Success() {
+        Call<User> mockCall = mock(Call.class);
+        when(apiService.verifyUser(any(UserVerifyRequest.class))).thenReturn(mockCall);
+
+        ArgumentCaptor<UserVerifyRequest> requestCaptor = ArgumentCaptor.forClass(UserVerifyRequest.class);
+
+        locationTracker.verifyUser(TEST_USER_ID, new UserCallback() {
+            @Override
+            public void onSuccess(User user) {
+                // Test passes
+            }
+
+            @Override
+            public void onError(String error) {
+                fail("Should not reach error callback");
+            }
+        });
+
+        verify(apiService).verifyUser(requestCaptor.capture());
+        assertEquals(TEST_USER_ID, requestCaptor.getValue().getUserId());
+    }
+
+    @Test
+    public void updateUserStatus_ValidStatus_Success() {
         Call<User> mockCall = mock(Call.class);
         when(apiService.updateUserStatus(eq(TEST_USER_ID), any(UserStatusRequest.class)))
                 .thenReturn(mockCall);
 
-        // Capture the request to verify status
         ArgumentCaptor<UserStatusRequest> requestCaptor = ArgumentCaptor.forClass(UserStatusRequest.class);
 
-        // Act
         locationTracker.updateUserStatus(TEST_USER_ID, true, new UserCallback() {
             @Override
             public void onSuccess(User user) {
@@ -90,51 +124,59 @@ public class UserTest {
             }
         });
 
-        // Assert
         verify(apiService).updateUserStatus(eq(TEST_USER_ID), requestCaptor.capture());
         assertEquals(true, requestCaptor.getValue().isActive());
     }
 
     @Test
-    public void getUserStatus_Success() {
-        // Arrange
-        Call<User> mockCall = mock(Call.class);
-        when(apiService.getUser(TEST_USER_ID)).thenReturn(mockCall);
+    public void createUser_EmptyUsername_ThrowsException() {
+        assertThrows(IllegalArgumentException.class, () ->
+                locationTracker.createUser("", new UserCallback() {
+                    @Override
+                    public void onSuccess(User user) {
+                        fail("Should not reach success callback");
+                    }
 
-        // Act
-        locationTracker.getUserStatus(TEST_USER_ID, new UserCallback() {
-            @Override
-            public void onSuccess(User user) {
-                // Test passes
-            }
-
-            @Override
-            public void onError(String error) {
-                fail("Should not reach error callback");
-            }
-        });
-
-        // Assert
-        verify(apiService).getUser(TEST_USER_ID);
+                    @Override
+                    public void onError(String error) {
+                        // Expected
+                    }
+                })
+        );
     }
 
     @Test
-    public void createUser_Error() {
-        // Arrange
-        Call<User> mockCall = mock(Call.class);
-        when(apiService.createUser(any(UserRequest.class))).thenReturn(mockCall);
+    public void verifyUser_EmptyUserId_ThrowsException() {
+        assertThrows(IllegalArgumentException.class, () ->
+                locationTracker.verifyUser("", new UserCallback() {
+                    @Override
+                    public void onSuccess(User user) {
+                        fail("Should not reach success callback");
+                    }
 
-        // Act
-        locationTracker.createUser("", new UserCallback() {
-            @Override
-            public void onSuccess(User user) {
-                fail("Should not reach success callback with empty username");
-            }
+                    @Override
+                    public void onError(String error) {
+                        // Expected
+                    }
+                })
+        );
+    }
 
-            @Override
-            public void onError(String error) {
-                // Test passes
-            }
-        });
+    @Test
+    public void createUser_VeryLongUsername_ThrowsException() {
+        String longUsername = "a".repeat(51); // username longer than 50 chars
+        assertThrows(IllegalArgumentException.class, () ->
+                locationTracker.createUser(longUsername, new UserCallback() {
+                    @Override
+                    public void onSuccess(User user) {
+                        fail("Should not reach success callback");
+                    }
+
+                    @Override
+                    public void onError(String error) {
+                        // Expected
+                    }
+                })
+        );
     }
 }

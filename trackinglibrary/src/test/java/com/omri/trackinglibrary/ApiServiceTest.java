@@ -7,6 +7,7 @@ import com.omri.trackinglibrary.api.ApiService;
 import com.omri.trackinglibrary.api.LocationUpdateRequest;
 import com.omri.trackinglibrary.api.UserRequest;
 import com.omri.trackinglibrary.api.UserStatusRequest;
+import com.omri.trackinglibrary.api.UserVerifyRequest;
 import com.omri.trackinglibrary.models.Location;
 import com.omri.trackinglibrary.models.User;
 
@@ -17,7 +18,7 @@ import retrofit2.Call;
 
 public class ApiServiceTest {
     private ApiService apiService;
-    private static final String TEST_USER_ID = "test123";
+    private static final String TEST_USER_ID = "507f1f77bcf86cd799439011";
 
     @Before
     public void setUp() {
@@ -32,6 +33,13 @@ public class ApiServiceTest {
     }
 
     @Test
+    public void verifyUser_ReturnsCall() {
+        UserVerifyRequest request = new UserVerifyRequest(TEST_USER_ID);
+        Call<User> call = apiService.verifyUser(request);
+        assertNotNull("Verify user call should not be null", call);
+    }
+
+    @Test
     public void updateUserStatus_ReturnsCall() {
         UserStatusRequest request = new UserStatusRequest(true);
         Call<User> call = apiService.updateUserStatus(TEST_USER_ID, request);
@@ -39,14 +47,8 @@ public class ApiServiceTest {
     }
 
     @Test
-    public void getUser_ReturnsCall() {
-        Call<User> call = apiService.getUser(TEST_USER_ID);
-        assertNotNull("Get user call should not be null", call);
-    }
-
-    @Test
     public void updateLocation_ReturnsCall() {
-        LocationUpdateRequest request = new LocationUpdateRequest(TEST_USER_ID, 0.0, 0.0);
+        LocationUpdateRequest request = new LocationUpdateRequest(TEST_USER_ID, 32.109333, 34.855499);
         Call<Location> call = apiService.updateLocation(request);
         assertNotNull("Update location call should not be null", call);
     }

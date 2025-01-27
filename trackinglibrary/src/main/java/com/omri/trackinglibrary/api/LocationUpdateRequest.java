@@ -8,11 +8,11 @@ import com.google.gson.annotations.SerializedName;
  */
 public class LocationUpdateRequest {
     @SerializedName("user_id")
-    private String userId;
+    private final String userId;
 
-    private double latitude;
+    private final double latitude;
 
-    private double longitude;
+    private final double longitude;
 
     /**
      * Constructs a new LocationUpdateRequest with the specified user ID, latitude, and longitude.
@@ -20,6 +20,7 @@ public class LocationUpdateRequest {
      * @param userId    The unique identifier of the user.
      * @param latitude  The latitude of the user's current location.
      * @param longitude The longitude of the user's current location.
+     * @throws IllegalArgumentException if any of the parameters are invalid
      */
     public LocationUpdateRequest(String userId, double latitude, double longitude) {
         this.userId = userId;
@@ -28,8 +29,12 @@ public class LocationUpdateRequest {
         validate();
     }
 
+    /**
+     * Validates the location update request data.
+     * @throws IllegalArgumentException if any of the parameters are invalid
+     */
     private void validate() {
-        if (userId == null || userId.isEmpty()) {
+        if (userId == null || userId.trim().isEmpty()) {
             throw new IllegalArgumentException("User ID cannot be null or empty");
         }
         if (latitude < -90 || latitude > 90) {
@@ -50,15 +55,6 @@ public class LocationUpdateRequest {
     }
 
     /**
-     * Sets the user ID.
-     *
-     * @param userId The user ID to set.
-     */
-    public void setUserId(String userId) {
-        this.userId = userId;
-    }
-
-    /**
      * Gets the latitude of the user's location.
      *
      * @return The latitude as a double.
@@ -68,29 +64,11 @@ public class LocationUpdateRequest {
     }
 
     /**
-     * Sets the latitude of the user's location.
-     *
-     * @param latitude The latitude to set.
-     */
-    public void setLatitude(double latitude) {
-        this.latitude = latitude;
-    }
-
-    /**
      * Gets the longitude of the user's location.
      *
      * @return The longitude as a double.
      */
     public double getLongitude() {
         return longitude;
-    }
-
-    /**
-     * Sets the longitude of the user's location.
-     *
-     * @param longitude The longitude to set.
-     */
-    public void setLongitude(double longitude) {
-        this.longitude = longitude;
     }
 }

@@ -1,6 +1,7 @@
 package com.omri.trackinglibrary;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.fail;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
@@ -21,10 +22,10 @@ import retrofit2.Call;
 public class LocationTest {
     private ApiService apiService;
     private LocationTrackerImpl locationTracker;
-    private static final String TEST_USER_ID = "test123";
+    private static final String TEST_USER_ID = "507f1f77bcf86cd799439011";
     private static final double TEST_LATITUDE = 32.109333;
     private static final double TEST_LONGITUDE = 34.855499;
-    private static final String TEST_TIMESTAMP = "2024-01-25T10:00:00Z";
+    private static final String TEST_TIMESTAMP = "2024-01-25T10:00:00.000Z";
 
     @Before
     public void setUp() {
@@ -33,11 +34,9 @@ public class LocationTest {
     }
 
     @Test
-    public void locationCreation_isCorrect() {
-        // Arrange & Act
+    public void locationCreation_ValidData_Success() {
         Location location = new Location(TEST_USER_ID, TEST_LATITUDE, TEST_LONGITUDE, TEST_TIMESTAMP);
 
-        // Assert
         assertEquals(TEST_USER_ID, location.getUserId());
         assertEquals(TEST_LATITUDE, location.getLatitude(), 0.000001);
         assertEquals(TEST_LONGITUDE, location.getLongitude(), 0.000001);
@@ -45,15 +44,33 @@ public class LocationTest {
     }
 
     @Test
+    public void locationCreation_NullUserId_ThrowsException() {
+        assertThrows(IllegalStateException.class, () ->
+                new Location(null, TEST_LATITUDE, TEST_LONGITUDE, TEST_TIMESTAMP)
+        );
+    }
+
+    @Test
+    public void locationCreation_InvalidLatitude_ThrowsException() {
+        assertThrows(IllegalArgumentException.class, () ->
+                new Location(TEST_USER_ID, 91.0, TEST_LONGITUDE, TEST_TIMESTAMP)
+        );
+    }
+
+    @Test
+    public void locationCreation_InvalidLongitude_ThrowsException() {
+        assertThrows(IllegalArgumentException.class, () ->
+                new Location(TEST_USER_ID, TEST_LATITUDE, 181.0, TEST_TIMESTAMP)
+        );
+    }
+
+    @Test
     public void updateLocation_Success() {
-        // Arrange
         Call<Location> mockCall = mock(Call.class);
         when(apiService.updateLocation(any(LocationUpdateRequest.class))).thenReturn(mockCall);
 
-        // Capture the request to verify coordinates
         ArgumentCaptor<LocationUpdateRequest> requestCaptor = ArgumentCaptor.forClass(LocationUpdateRequest.class);
 
-        // Act
         locationTracker.updateLocation(TEST_USER_ID, TEST_LATITUDE, TEST_LONGITUDE, new LocationCallback() {
             @Override
             public void onSuccess(Location location) {
@@ -66,7 +83,6 @@ public class LocationTest {
             }
         });
 
-        // Assert
         verify(apiService).updateLocation(requestCaptor.capture());
         LocationUpdateRequest capturedRequest = requestCaptor.getValue();
         assertEquals(TEST_USER_ID, capturedRequest.getUserId());
@@ -76,11 +92,9 @@ public class LocationTest {
 
     @Test
     public void getUserLocation_Success() {
-        // Arrange
         Call<Location> mockCall = mock(Call.class);
         when(apiService.getUserLocation(TEST_USER_ID)).thenReturn(mockCall);
 
-        // Act
         locationTracker.getUserLocation(TEST_USER_ID, new LocationCallback() {
             @Override
             public void onSuccess(Location location) {
@@ -93,15 +107,30 @@ public class LocationTest {
             }
         });
 
-        // Assert
         verify(apiService).getUserLocation(TEST_USER_ID);
     }
 
     @Test
-    public void defaultLocation_isCorrect() {
-        // Test that default location (0,0) is handled correctly
+    public void defaultLocation_IsValid() {
         Location location = new Location(TEST_USER_ID, 0.0, 0.0, TEST_TIMESTAMP);
         assertEquals(0.0, location.getLatitude(), 0.000001);
         assertEquals(0.0, location.getLongitude(), 0.000001);
+    }
+
+    @Test
+    public void updateLocation_InvalidCoordinates_ThrowsException() {
+        assertThrows(IllegalArgumentException.class, () ->
+                locationTracker.updateLocation(TEST_USER_ID, 91.0, 34.855499, new LocationCallback() {
+                    @Override
+                    public void onSuccess(Location location) {
+                        fail("Should not reach success callback");
+                    }
+
+                    @Override
+                    public void onError(String error) {
+                        // Expected
+                    }
+                })
+        );
     }
 }
