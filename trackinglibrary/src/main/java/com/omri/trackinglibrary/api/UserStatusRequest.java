@@ -17,10 +17,18 @@ public class UserStatusRequest {
     public UserStatusRequest(boolean isActive) {
         this.isActive = isActive;
     }
-
+    /**
+     * Checks if the user is currently active.
+     * @return true if the user is active, false otherwise
+     */
     public boolean isActive() {
         return isActive;
     }
+    /**
+     * Sets the active status of the user.
+     *
+     * @param active The new active status to set (true for active, false for inactive)
+     */
     public void setActive(boolean active) {
         isActive = active;
     }

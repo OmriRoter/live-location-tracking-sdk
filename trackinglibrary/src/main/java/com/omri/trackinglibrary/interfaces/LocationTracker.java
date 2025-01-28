@@ -1,6 +1,5 @@
 package com.omri.trackinglibrary.interfaces;
 
-import com.omri.trackinglibrary.models.Location;
 
 /**
  * LocationTracker defines the contract for tracking user locations,

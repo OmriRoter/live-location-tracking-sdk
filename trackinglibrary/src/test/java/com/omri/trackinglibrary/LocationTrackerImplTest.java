@@ -10,30 +10,42 @@ import com.omri.trackinglibrary.interfaces.LocationCallback;
 import com.omri.trackinglibrary.interfaces.UserCallback;
 import com.omri.trackinglibrary.models.Location;
 import com.omri.trackinglibrary.models.User;
-
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.ArgumentCaptor;
-
 import retrofit2.Call;
 
 /**
- * Unit tests for LocationTrackerImpl using mock ApiService
+ * Unit tests for LocationTrackerImpl class using mock ApiService.
+ * Tests all main functionalities of the location tracker including user management
+ * and location updates using Mockito for API service simulation.
  */
 public class LocationTrackerImplTest {
     private ApiService mockApiService;
     private LocationTrackerImpl locationTracker;
+
+    /**
+     * Test constants used across multiple test cases
+     */
     private static final String TEST_USER_ID = "507f1f77bcf86cd799439011";
     private static final String TEST_USERNAME = "testUser";
     private static final double TEST_LATITUDE = 32.109333;
     private static final double TEST_LONGITUDE = 34.855499;
 
+    /**
+     * Sets up the test environment before each test execution.
+     * Creates a mock API service and initializes the location tracker with it.
+     */
     @Before
     public void setUp() {
         mockApiService = mock(ApiService.class);
         locationTracker = new LocationTrackerImpl(mockApiService);
     }
 
+    /**
+     * Tests successful user creation.
+     * Verifies that the API service is called with appropriate parameters
+     * and the success callback is triggered.
+     */
     @Test
     public void createUser_Success() {
         Call<User> mockCall = mock(Call.class);
@@ -54,6 +66,11 @@ public class LocationTrackerImplTest {
         verify(mockApiService).createUser(any(UserRequest.class));
     }
 
+    /**
+     * Tests successful user verification.
+     * Verifies that the API service is called with the correct user ID
+     * and the success callback is triggered.
+     */
     @Test
     public void verifyUser_Success() {
         Call<User> mockCall = mock(Call.class);
@@ -74,6 +91,11 @@ public class LocationTrackerImplTest {
         verify(mockApiService).verifyUser(any(UserVerifyRequest.class));
     }
 
+    /**
+     * Tests successful user status update.
+     * Verifies that the API service is called with correct user ID and status
+     * and the success callback is triggered.
+     */
     @Test
     public void updateUserStatus_Success() {
         Call<User> mockCall = mock(Call.class);
@@ -95,6 +117,11 @@ public class LocationTrackerImplTest {
         verify(mockApiService).updateUserStatus(eq(TEST_USER_ID), any(UserStatusRequest.class));
     }
 
+    /**
+     * Tests successful location update.
+     * Verifies that the API service is called with correct location parameters
+     * and the success callback is triggered.
+     */
     @Test
     public void updateLocation_Success() {
         Call<Location> mockCall = mock(Call.class);
@@ -115,6 +142,11 @@ public class LocationTrackerImplTest {
         verify(mockApiService).updateLocation(any(LocationUpdateRequest.class));
     }
 
+    /**
+     * Tests successful user location retrieval.
+     * Verifies that the API service is called with the correct user ID
+     * and the success callback is triggered.
+     */
     @Test
     public void getUserLocation_Success() {
         Call<Location> mockCall = mock(Call.class);
@@ -135,6 +167,11 @@ public class LocationTrackerImplTest {
         verify(mockApiService).getUserLocation(TEST_USER_ID);
     }
 
+    /**
+     * Tests that getUserStatus correctly delegates to verifyUser.
+     * Verifies that the API service's verifyUser method is called
+     * when requesting user status.
+     */
     @Test
     public void getUserStatus_CallsVerifyUser() {
         Call<User> mockCall = mock(Call.class);

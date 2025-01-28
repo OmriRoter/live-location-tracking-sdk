@@ -1,36 +1,51 @@
 package com.omri.trackinglibrary;
 
+import android.annotation.SuppressLint;
 import android.util.Log;
-import com.omri.trackinglibrary.api.ApiClient;
-import com.omri.trackinglibrary.api.ApiService;
-import com.omri.trackinglibrary.api.LocationUpdateRequest;
-import com.omri.trackinglibrary.api.UserRequest;
-import com.omri.trackinglibrary.api.UserStatusRequest;
-import com.omri.trackinglibrary.api.UserVerifyRequest;
-import com.omri.trackinglibrary.interfaces.LocationCallback;
-import com.omri.trackinglibrary.interfaces.LocationTracker;
-import com.omri.trackinglibrary.interfaces.UserCallback;
-import com.omri.trackinglibrary.models.Location;
-import com.omri.trackinglibrary.models.User;
 
+import androidx.annotation.NonNull;
+
+import com.omri.trackinglibrary.api.*;
+import com.omri.trackinglibrary.interfaces.*;
+import com.omri.trackinglibrary.models.*;
 import java.io.IOException;
-
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
+/**
+ * Implementation of the LocationTracker interface that provides functionality for tracking user locations
+ * and managing user states through a REST API.
+ * This class handles all network communications with the tracking server.
+ */
 public class LocationTrackerImpl implements LocationTracker {
     private static final String TAG = "LocationTrackerImpl";
     private final ApiService apiService;
 
+    /**
+     * Constructs a new LocationTrackerImpl with the default API service.
+     * Uses the default ApiClient configuration.
+     */
     public LocationTrackerImpl() {
         this(ApiClient.getClient().create(ApiService.class));
     }
 
+    /**
+     * Constructs a new LocationTrackerImpl with a custom API service.
+     * Useful for testing and custom configurations.
+     *
+     * @param apiService The API service implementation to use
+     */
     public LocationTrackerImpl(ApiService apiService) {
         this.apiService = apiService;
     }
 
+    /**
+     * Verifies if a user exists in the system.
+     *
+     * @param userId   The ID of the user to verify
+     * @param callback Callback to handle the verification result
+     */
     @Override
     public void verifyUser(String userId, final UserCallback callback) {
         Log.d(TAG, "Verifying user with ID: " + userId);
@@ -38,7 +53,7 @@ public class LocationTrackerImpl implements LocationTracker {
         UserVerifyRequest request = new UserVerifyRequest(userId);
         apiService.verifyUser(request).enqueue(new Callback<User>() {
             @Override
-            public void onResponse(Call<User> call, Response<User> response) {
+            public void onResponse(@NonNull Call<User> call, @NonNull Response<User> response) {
                 if (response.isSuccessful() && response.body() != null) {
                     Log.d(TAG, "User verified successfully");
                     callback.onSuccess(response.body());
@@ -50,7 +65,7 @@ public class LocationTrackerImpl implements LocationTracker {
             }
 
             @Override
-            public void onFailure(Call<User> call, Throwable t) {
+            public void onFailure(@NonNull Call<User> call, @NonNull Throwable t) {
                 String error = "Network error while verifying user: " + t.getMessage();
                 Log.e(TAG, error, t);
                 callback.onError(error);
@@ -58,6 +73,12 @@ public class LocationTrackerImpl implements LocationTracker {
         });
     }
 
+    /**
+     * Creates a new user in the system.
+     *
+     * @param username The username for the new user
+     * @param callback Callback to handle the user creation result
+     */
     @Override
     public void createUser(String username, final UserCallback callback) {
         Log.d(TAG, "Creating user with username: " + username);
@@ -65,7 +86,7 @@ public class LocationTrackerImpl implements LocationTracker {
         UserRequest request = new UserRequest(username);
         apiService.createUser(request).enqueue(new Callback<User>() {
             @Override
-            public void onResponse(Call<User> call, Response<User> response) {
+            public void onResponse(@NonNull Call<User> call, @NonNull Response<User> response) {
                 if (response.isSuccessful() && response.body() != null) {
                     Log.d(TAG, "User created successfully");
                     callback.onSuccess(response.body());
@@ -77,7 +98,7 @@ public class LocationTrackerImpl implements LocationTracker {
             }
 
             @Override
-            public void onFailure(Call<User> call, Throwable t) {
+            public void onFailure(@NonNull Call<User> call, @NonNull Throwable t) {
                 String error = "Network error while creating user: " + t.getMessage();
                 Log.e(TAG, error, t);
                 callback.onError(error);
@@ -85,6 +106,13 @@ public class LocationTrackerImpl implements LocationTracker {
         });
     }
 
+    /**
+     * Updates the active status of a user.
+     *
+     * @param userId   The ID of the user to update
+     * @param isActive The new active status to set
+     * @param callback Callback to handle the status update result
+     */
     @Override
     public void updateUserStatus(String userId, boolean isActive, final UserCallback callback) {
         Log.d(TAG, "Updating status for userId: " + userId + " to: " + isActive);
@@ -92,7 +120,7 @@ public class LocationTrackerImpl implements LocationTracker {
         UserStatusRequest request = new UserStatusRequest(isActive);
         apiService.updateUserStatus(userId, request).enqueue(new Callback<User>() {
             @Override
-            public void onResponse(Call<User> call, Response<User> response) {
+            public void onResponse(@NonNull Call<User> call, @NonNull Response<User> response) {
                 if (response.isSuccessful() && response.body() != null) {
                     Log.d(TAG, "Status updated successfully");
                     callback.onSuccess(response.body());
@@ -104,7 +132,7 @@ public class LocationTrackerImpl implements LocationTracker {
             }
 
             @Override
-            public void onFailure(Call<User> call, Throwable t) {
+            public void onFailure(@NonNull Call<User> call, @NonNull Throwable t) {
                 String error = "Network error while updating status: " + t.getMessage();
                 Log.e(TAG, error, t);
                 callback.onError(error);
@@ -112,12 +140,26 @@ public class LocationTrackerImpl implements LocationTracker {
         });
     }
 
+    /**
+     * Gets the current status of a user.
+     * This method internally uses verifyUser since the server doesn't provide a dedicated status endpoint.
+     *
+     * @param userId   The ID of the user to check
+     * @param callback Callback to handle the status retrieval result
+     */
     @Override
     public void getUserStatus(String userId, final UserCallback callback) {
-        // מחזירים בפועל את verifyUser כי השרת לא מספק endpoint מפורש לסטטוס
         verifyUser(userId, callback);
     }
 
+    /**
+     * Updates the location of a user.
+     *
+     * @param userId    The ID of the user whose location is being updated
+     * @param latitude  The new latitude coordinate
+     * @param longitude The new longitude coordinate
+     * @param callback  Callback to handle the location update result
+     */
     @Override
     public void updateLocation(String userId, double latitude, double longitude, final LocationCallback callback) {
         Log.d(TAG, "Updating location - userId: " + userId + ", lat: " + latitude + ", lng: " + longitude);
@@ -125,7 +167,7 @@ public class LocationTrackerImpl implements LocationTracker {
         LocationUpdateRequest request = new LocationUpdateRequest(userId, latitude, longitude);
         apiService.updateLocation(request).enqueue(new Callback<Location>() {
             @Override
-            public void onResponse(Call<Location> call, Response<Location> response) {
+            public void onResponse(@NonNull Call<Location> call, @NonNull Response<Location> response) {
                 if (response.isSuccessful() && response.body() != null) {
                     Log.d(TAG, "Location update successful");
                     callback.onSuccess(response.body());
@@ -137,7 +179,7 @@ public class LocationTrackerImpl implements LocationTracker {
             }
 
             @Override
-            public void onFailure(Call<Location> call, Throwable t) {
+            public void onFailure(@NonNull Call<Location> call, @NonNull Throwable t) {
                 String error = "Network error while updating location: " + t.getMessage();
                 Log.e(TAG, error, t);
                 callback.onError(error);
@@ -145,13 +187,19 @@ public class LocationTrackerImpl implements LocationTracker {
         });
     }
 
+    /**
+     * Gets the current location of a user.
+     *
+     * @param userId   The ID of the user whose location to retrieve
+     * @param callback Callback to handle the location retrieval result
+     */
     @Override
     public void getUserLocation(String userId, final LocationCallback callback) {
         Log.d(TAG, "Getting location for userId: " + userId);
 
         apiService.getUserLocation(userId).enqueue(new Callback<Location>() {
             @Override
-            public void onResponse(Call<Location> call, Response<Location> response) {
+            public void onResponse(@NonNull Call<Location> call, @NonNull Response<Location> response) {
                 if (response.isSuccessful() && response.body() != null) {
                     Log.d(TAG, "Got location successfully");
                     callback.onSuccess(response.body());
@@ -163,7 +211,7 @@ public class LocationTrackerImpl implements LocationTracker {
             }
 
             @Override
-            public void onFailure(Call<Location> call, Throwable t) {
+            public void onFailure(@NonNull Call<Location> call, @NonNull Throwable t) {
                 String error = "Network error while getting location: " + t.getMessage();
                 Log.e(TAG, error, t);
                 callback.onError(error);
@@ -173,10 +221,12 @@ public class LocationTrackerImpl implements LocationTracker {
 
     /**
      * Extracts error message from an unsuccessful response.
+     * Attempts to read the error body and formats it with the response code.
      *
-     * @param response The unsuccessful response
-     * @return A string containing the error message and response code
+     * @param response The unsuccessful response to extract the error from
+     * @return A formatted string containing the error message and response code
      */
+    @SuppressLint("DefaultLocale")
     private String getErrorMessage(Response<?> response) {
         String errorBody = "";
         try {

@@ -1,40 +1,44 @@
 package com.omri.trackinglibrary;
 
 import static org.junit.Assert.*;
-import static org.hamcrest.MatcherAssert.assertThat;
-//import static org.hamcrest.Matchers.*;
+
 
 import com.omri.trackinglibrary.api.*;
 import com.omri.trackinglibrary.models.Location;
 import com.omri.trackinglibrary.models.User;
-
 import org.junit.Before;
 import org.junit.Test;
-
 import java.io.IOException;
-
 import retrofit2.Call;
 import retrofit2.Response;
 
 /**
- * ApiServiceTest checks basic creation of Retrofit Call objects
- * and also performs real integration tests (if server is reachable).
+ * Test suite for the ApiService interface.
+ * Includes both unit tests for API call object creation and integration tests for full API functionality.
+ * Integration tests require a running server instance at the URL specified in ApiClient.
  */
 public class ApiServiceTest {
     private ApiService apiService;
 
-    // לצורך הדגמה, אפשר לשים כאן user_id קיים לדוגמא.
-    // אך בטסטים האינטגרטיביים נייצר משתמש חדש
+    /**
+     * Sample user ID for demonstration purposes.
+     * This ID is used in basic call creation tests.
+     * Integration tests will create their own users.
+     */
     private static final String TEST_USER_ID = "507f1f77bcf86cd799439011";
 
+    /**
+     * Sets up the test environment before each test.
+     * Initializes the ApiService instance using the default ApiClient configuration.
+     */
     @Before
     public void setUp() {
         apiService = ApiClient.getClient().create(ApiService.class);
     }
 
-    // -------------------------
-    // קיימים: רק בודקים שה-Call לא ריק
-    // -------------------------
+    /**
+     * Tests that createUser endpoint creates a valid Call object.
+     */
     @Test
     public void createUser_ReturnsCall() {
         UserRequest request = new UserRequest("testUser");
@@ -42,6 +46,9 @@ public class ApiServiceTest {
         assertNotNull("Create user call should not be null", call);
     }
 
+    /**
+     * Tests that verifyUser endpoint creates a valid Call object.
+     */
     @Test
     public void verifyUser_ReturnsCall() {
         UserVerifyRequest request = new UserVerifyRequest(TEST_USER_ID);
@@ -49,6 +56,9 @@ public class ApiServiceTest {
         assertNotNull("Verify user call should not be null", call);
     }
 
+    /**
+     * Tests that updateUserStatus endpoint creates a valid Call object.
+     */
     @Test
     public void updateUserStatus_ReturnsCall() {
         UserStatusRequest request = new UserStatusRequest(true);
@@ -56,6 +66,9 @@ public class ApiServiceTest {
         assertNotNull("Update user status call should not be null", call);
     }
 
+    /**
+     * Tests that updateLocation endpoint creates a valid Call object.
+     */
     @Test
     public void updateLocation_ReturnsCall() {
         LocationUpdateRequest request = new LocationUpdateRequest(TEST_USER_ID, 32.109333, 34.855499);
@@ -63,31 +76,34 @@ public class ApiServiceTest {
         assertNotNull("Update location call should not be null", call);
     }
 
+    /**
+     * Tests that getUserLocation endpoint creates a valid Call object.
+     */
     @Test
     public void getUserLocation_ReturnsCall() {
         Call<Location> call = apiService.getUserLocation(TEST_USER_ID);
         assertNotNull("Get user location call should not be null", call);
     }
 
-
-    // -------------------------
-    // טסטים אינטגרטיביים: מבצעים קריאות אמיתיות לשרת
-    // -------------------------
-
     /**
-     * בדיקה אינטגרטיבית מלאה:
-     * 1) יצירת משתמש חדש
-     * 2) אימות המשתמש (verify)
-     * 3) עדכון מיקום
-     * 4) בדיקת שליפת מיקום
-     * 5) עדכון סטטוס משתמש
-     * 6) וידוא שהסטטוס אכן השתנה (verify נוסף)
+     * Comprehensive integration test that verifies the complete user and location tracking flow:
+     * 1. Creates a new user
+     * 2. Verifies the user exists
+     * 3. Updates the user's location
+     * 4. Retrieves the user's location
+     * 5. Updates the user's active status
+     * 6. Verifies the status change
+
+     * Requirements:
+     * - Server must be running at the URL specified in ApiClient
+     * - Network connection must be available
+     * - Server must be able to handle all API endpoints
      *
-     * דורש שהשרת ירוץ בכתובת המוגדרת ב-ApiClient.
+     * @throws IOException if there are network communication issues
      */
     @Test
     public void integrationTest_fullFlow() throws IOException {
-        // 1) Create user
+        // Create user with unique username
         String randomUsername = "testIntegration_" + System.currentTimeMillis();
         UserRequest createRequest = new UserRequest(randomUsername);
 
@@ -103,7 +119,7 @@ public class ApiServiceTest {
         assertNotNull("Created user ID is null", createdUser.getId());
         assertEquals("Username mismatch", randomUsername, createdUser.getUsername());
 
-        // 2) Verify user
+        // Verify created user exists
         UserVerifyRequest verifyRequest = new UserVerifyRequest(createdUser.getId());
         Response<User> verifyResponse = apiService.verifyUser(verifyRequest).execute();
         assertNotNull("Verify user response is null", verifyResponse);
@@ -116,7 +132,7 @@ public class ApiServiceTest {
         assertNotNull("Verified user is null", verifiedUser);
         assertEquals("User IDs differ after verify", createdUser.getId(), verifiedUser.getId());
 
-        // 3) Update location
+        // Update user location
         double testLat = 32.098424;
         double testLon = 34.802374;
         LocationUpdateRequest locationUpdateRequest =
@@ -134,7 +150,7 @@ public class ApiServiceTest {
         assertEquals(testLat, updatedLocation.getLatitude(), 0.00001);
         assertEquals(testLon, updatedLocation.getLongitude(), 0.00001);
 
-        // 4) Get user location
+        // Retrieve user location
         Response<Location> getLocResponse = apiService.getUserLocation(createdUser.getId()).execute();
         assertNotNull("Get location response is null", getLocResponse);
         assertTrue(
@@ -148,7 +164,7 @@ public class ApiServiceTest {
         assertEquals(testLat, gotLocation.getLatitude(), 0.00001);
         assertEquals(testLon, gotLocation.getLongitude(), 0.00001);
 
-        // 5) Update user status
+        // Update user status
         UserStatusRequest statusRequest = new UserStatusRequest(false);
         Response<User> statusResponse = apiService.updateUserStatus(createdUser.getId(), statusRequest).execute();
         assertNotNull("Status update response is null", statusResponse);
@@ -162,7 +178,7 @@ public class ApiServiceTest {
         assertFalse("User isActive should be false after update", userWithUpdatedStatus.isActive());
         assertEquals("User ID mismatch after status update", createdUser.getId(), userWithUpdatedStatus.getId());
 
-        // 6) Verify again to see if is_active changed
+        // Verify status change
         UserVerifyRequest verifyAgainRequest = new UserVerifyRequest(createdUser.getId());
         Response<User> verifyAgainResponse = apiService.verifyUser(verifyAgainRequest).execute();
         assertTrue(

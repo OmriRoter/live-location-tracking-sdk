@@ -29,7 +29,10 @@ public class UserVerifyRequest {
             throw new IllegalArgumentException("User ID cannot be null or empty");
         }
     }
-
+    /**
+     * Gets the user ID associated with this location.
+     * @return The user ID as a String
+     */
     public String getUserId() {
         return userId;
     }

@@ -30,6 +30,7 @@ public class LocationUpdateRequest {
 
     /**
      * Validates the location update request data.
+     *
      * @throws IllegalArgumentException if any of the parameters are invalid
      */
     private void validate() {
@@ -44,12 +45,29 @@ public class LocationUpdateRequest {
         }
     }
 
+    /**
+     * Gets the user ID associated with this location.
+     *
+     * @return The user ID as a String
+     */
     public String getUserId() {
         return userId;
     }
+
+    /**
+     * Gets the latitude coordinate of this location.
+     *
+     * @return The latitude as a double value
+     */
     public double getLatitude() {
         return latitude;
     }
+
+    /**
+     * Gets the longitude coordinate of this location.
+     *
+     * @return The longitude as a double value
+     */
     public double getLongitude() {
         return longitude;
     }
