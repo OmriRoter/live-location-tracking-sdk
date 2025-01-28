@@ -34,11 +34,6 @@ public class UserRequest {
         }
     }
 
-    /**
-     * Gets the username of the user.
-     *
-     * @return The username as a string.
-     */
     public String getUsername() {
         return username;
     }

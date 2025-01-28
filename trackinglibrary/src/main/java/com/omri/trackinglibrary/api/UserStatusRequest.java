@@ -18,20 +18,9 @@ public class UserStatusRequest {
         this.isActive = isActive;
     }
 
-    /**
-     * Gets the active status.
-     *
-     * @return The active status as a boolean
-     */
     public boolean isActive() {
         return isActive;
     }
-
-    /**
-     * Sets the active status.
-     *
-     * @param active The active status to set
-     */
     public void setActive(boolean active) {
         isActive = active;
     }

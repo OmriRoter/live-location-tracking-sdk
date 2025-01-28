@@ -11,7 +11,6 @@ public class LocationUpdateRequest {
     private final String userId;
 
     private final double latitude;
-
     private final double longitude;
 
     /**
@@ -45,29 +44,12 @@ public class LocationUpdateRequest {
         }
     }
 
-    /**
-     * Gets the user ID.
-     *
-     * @return The user ID as a string.
-     */
     public String getUserId() {
         return userId;
     }
-
-    /**
-     * Gets the latitude of the user's location.
-     *
-     * @return The latitude as a double.
-     */
     public double getLatitude() {
         return latitude;
     }
-
-    /**
-     * Gets the longitude of the user's location.
-     *
-     * @return The longitude as a double.
-     */
     public double getLongitude() {
         return longitude;
     }

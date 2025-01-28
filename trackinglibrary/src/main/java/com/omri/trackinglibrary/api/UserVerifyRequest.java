@@ -30,11 +30,6 @@ public class UserVerifyRequest {
         }
     }
 
-    /**
-     * Gets the user ID.
-     *
-     * @return The user ID as a string.
-     */
     public String getUserId() {
         return userId;
     }

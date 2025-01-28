@@ -1,18 +1,11 @@
 package com.omri.trackinglibrary;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThrows;
-import static org.junit.Assert.fail;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.junit.Assert.*;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.*;
 import static org.mockito.ArgumentMatchers.eq;
 
-import com.omri.trackinglibrary.api.ApiService;
-import com.omri.trackinglibrary.api.UserRequest;
-import com.omri.trackinglibrary.api.UserStatusRequest;
-import com.omri.trackinglibrary.api.UserVerifyRequest;
+import com.omri.trackinglibrary.api.*;
 import com.omri.trackinglibrary.interfaces.UserCallback;
 import com.omri.trackinglibrary.models.User;
 
@@ -40,7 +33,7 @@ public class UserTest {
         User user = new User(TEST_USER_ID, TEST_USERNAME, TEST_TIMESTAMP, true);
         assertEquals(TEST_USER_ID, user.getId());
         assertEquals(TEST_USERNAME, user.getUsername());
-        assertEquals(true, user.isActive());
+        assertTrue(user.isActive());
         assertEquals(TEST_TIMESTAMP, user.getCreatedAt());
     }
 
@@ -68,7 +61,7 @@ public class UserTest {
         locationTracker.createUser(TEST_USERNAME, new UserCallback() {
             @Override
             public void onSuccess(User user) {
-                // Test passes
+                // success
             }
 
             @Override
@@ -91,7 +84,7 @@ public class UserTest {
         locationTracker.verifyUser(TEST_USER_ID, new UserCallback() {
             @Override
             public void onSuccess(User user) {
-                // Test passes
+                // success
             }
 
             @Override
@@ -115,7 +108,7 @@ public class UserTest {
         locationTracker.updateUserStatus(TEST_USER_ID, true, new UserCallback() {
             @Override
             public void onSuccess(User user) {
-                // Test passes
+                // success
             }
 
             @Override
@@ -125,7 +118,7 @@ public class UserTest {
         });
 
         verify(apiService).updateUserStatus(eq(TEST_USER_ID), requestCaptor.capture());
-        assertEquals(true, requestCaptor.getValue().isActive());
+        assertTrue(requestCaptor.getValue().isActive());
     }
 
     @Test

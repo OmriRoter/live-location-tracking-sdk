@@ -1,12 +1,8 @@
 package com.omri.trackinglibrary;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThrows;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 import com.omri.trackinglibrary.api.ApiService;
 import com.omri.trackinglibrary.api.LocationUpdateRequest;
@@ -74,7 +70,7 @@ public class LocationTest {
         locationTracker.updateLocation(TEST_USER_ID, TEST_LATITUDE, TEST_LONGITUDE, new LocationCallback() {
             @Override
             public void onSuccess(Location location) {
-                // Test passes
+                // success
             }
 
             @Override
@@ -98,7 +94,7 @@ public class LocationTest {
         locationTracker.getUserLocation(TEST_USER_ID, new LocationCallback() {
             @Override
             public void onSuccess(Location location) {
-                // Test passes
+                // success
             }
 
             @Override
@@ -119,8 +115,9 @@ public class LocationTest {
 
     @Test
     public void updateLocation_InvalidCoordinates_ThrowsException() {
+        // כאן אנחנו מצפים לזריקת חריגה עוד לפני שליחת הבקשה לשרת
         assertThrows(IllegalArgumentException.class, () ->
-                locationTracker.updateLocation(TEST_USER_ID, 91.0, 34.855499, new LocationCallback() {
+                locationTracker.updateLocation(TEST_USER_ID, 91.0, TEST_LONGITUDE, new LocationCallback() {
                     @Override
                     public void onSuccess(Location location) {
                         fail("Should not reach success callback");
@@ -128,7 +125,7 @@ public class LocationTest {
 
                     @Override
                     public void onError(String error) {
-                        // Expected
+                        // Even if we had a callback, code won't reach here
                     }
                 })
         );

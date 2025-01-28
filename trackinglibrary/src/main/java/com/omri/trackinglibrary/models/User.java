@@ -46,38 +46,15 @@ public class User {
         }
     }
 
-    /**
-     * Gets the unique identifier of the user.
-     *
-     * @return The user ID as a string.
-     */
     public String getId() {
         return id;
     }
-
-    /**
-     * Gets the username of the user.
-     *
-     * @return The username as a string.
-     */
     public String getUsername() {
         return username;
     }
-
-    /**
-     * Gets the timestamp indicating when the user was created.
-     *
-     * @return The creation timestamp as a string.
-     */
     public String getCreatedAt() {
         return createdAt;
     }
-
-    /**
-     * Gets the active status of the user.
-     *
-     * @return The active status as a boolean.
-     */
     public boolean isActive() {
         return isActive;
     }

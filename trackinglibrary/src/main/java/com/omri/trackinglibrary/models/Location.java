@@ -11,7 +11,6 @@ public class Location {
     private String userId;
 
     private double latitude;
-
     private double longitude;
 
     @SerializedName("last_updated")
@@ -50,38 +49,15 @@ public class Location {
         }
     }
 
-    /**
-     * Gets the user ID associated with the location.
-     *
-     * @return The user ID as a string.
-     */
     public String getUserId() {
         return userId;
     }
-
-    /**
-     * Gets the latitude of the user's location.
-     *
-     * @return The latitude as a double.
-     */
     public double getLatitude() {
         return latitude;
     }
-
-    /**
-     * Gets the longitude of the user's location.
-     *
-     * @return The longitude as a double.
-     */
     public double getLongitude() {
         return longitude;
     }
-
-    /**
-     * Gets the timestamp of the last location update.
-     *
-     * @return The last updated timestamp as a string.
-     */
     public String getLastUpdated() {
         return lastUpdated;
     }

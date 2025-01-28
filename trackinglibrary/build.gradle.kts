@@ -83,4 +83,7 @@ dependencies {
     testImplementation("org.mockito:mockito-inline:4.5.1")
     testImplementation("com.squareup.retrofit2:retrofit-mock:2.9.0")
     androidTestImplementation(libs.junit.junit)
+
+    testImplementation("org.hamcrest:hamcrest:2.2") // Or the latest version
+    testImplementation("junit:junit:4.13.2") // Or the latest version
 }

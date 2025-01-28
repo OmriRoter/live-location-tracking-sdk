@@ -3,15 +3,9 @@ package com.omri.trackinglibrary;
 import static org.junit.Assert.fail;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
-import com.omri.trackinglibrary.api.ApiService;
-import com.omri.trackinglibrary.api.LocationUpdateRequest;
-import com.omri.trackinglibrary.api.UserRequest;
-import com.omri.trackinglibrary.api.UserStatusRequest;
-import com.omri.trackinglibrary.api.UserVerifyRequest;
+import com.omri.trackinglibrary.api.*;
 import com.omri.trackinglibrary.interfaces.LocationCallback;
 import com.omri.trackinglibrary.interfaces.UserCallback;
 import com.omri.trackinglibrary.models.Location;
@@ -23,6 +17,9 @@ import org.mockito.ArgumentCaptor;
 
 import retrofit2.Call;
 
+/**
+ * Unit tests for LocationTrackerImpl using mock ApiService
+ */
 public class LocationTrackerImplTest {
     private ApiService mockApiService;
     private LocationTrackerImpl locationTracker;
@@ -45,7 +42,7 @@ public class LocationTrackerImplTest {
         locationTracker.createUser(TEST_USERNAME, new UserCallback() {
             @Override
             public void onSuccess(User user) {
-                // Test passes
+                // success
             }
 
             @Override
@@ -65,7 +62,7 @@ public class LocationTrackerImplTest {
         locationTracker.verifyUser(TEST_USER_ID, new UserCallback() {
             @Override
             public void onSuccess(User user) {
-                // Test passes
+                // success
             }
 
             @Override
@@ -83,12 +80,10 @@ public class LocationTrackerImplTest {
         when(mockApiService.updateUserStatus(eq(TEST_USER_ID), any(UserStatusRequest.class)))
                 .thenReturn(mockCall);
 
-        ArgumentCaptor<UserStatusRequest> requestCaptor = ArgumentCaptor.forClass(UserStatusRequest.class);
-
         locationTracker.updateUserStatus(TEST_USER_ID, true, new UserCallback() {
             @Override
             public void onSuccess(User user) {
-                // Test passes
+                // success
             }
 
             @Override
@@ -97,7 +92,7 @@ public class LocationTrackerImplTest {
             }
         });
 
-        verify(mockApiService).updateUserStatus(eq(TEST_USER_ID), requestCaptor.capture());
+        verify(mockApiService).updateUserStatus(eq(TEST_USER_ID), any(UserStatusRequest.class));
     }
 
     @Test
@@ -108,7 +103,7 @@ public class LocationTrackerImplTest {
         locationTracker.updateLocation(TEST_USER_ID, TEST_LATITUDE, TEST_LONGITUDE, new LocationCallback() {
             @Override
             public void onSuccess(Location location) {
-                // Test passes
+                // success
             }
 
             @Override
@@ -128,7 +123,7 @@ public class LocationTrackerImplTest {
         locationTracker.getUserLocation(TEST_USER_ID, new LocationCallback() {
             @Override
             public void onSuccess(Location location) {
-                // Test passes
+                // success
             }
 
             @Override
@@ -148,7 +143,7 @@ public class LocationTrackerImplTest {
         locationTracker.getUserStatus(TEST_USER_ID, new UserCallback() {
             @Override
             public void onSuccess(User user) {
-                // Test passes
+                // success
             }
 
             @Override

@@ -14,6 +14,7 @@ import com.omri.trackinglibrary.models.Location;
 import com.omri.trackinglibrary.models.User;
 
 import java.io.IOException;
+
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -113,6 +114,7 @@ public class LocationTrackerImpl implements LocationTracker {
 
     @Override
     public void getUserStatus(String userId, final UserCallback callback) {
+        // מחזירים בפועל את verifyUser כי השרת לא מספק endpoint מפורש לסטטוס
         verifyUser(userId, callback);
     }
 
