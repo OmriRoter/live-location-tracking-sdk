@@ -39,7 +39,7 @@ Add the dependency to your module's `build.gradle.kts`:
 
 ```kotlin
 dependencies {
-    implementation("com.github.OmriRoter:live-location-tracking-sdk:1.1.4")
+    implementation("com.github.OmriRoter:live-location-tracking-sdk:1.2.3")
 }
 ```
 
