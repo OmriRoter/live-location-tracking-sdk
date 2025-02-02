@@ -324,4 +324,4 @@ For support and bug reports, please create an issue in the [GitHub repository](h
 
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+This project is licensed under the MIT License.
